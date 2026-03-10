@@ -1,14 +1,16 @@
 # OpenWRT OpenVPN Server Management
 
-**Version: v2.5**
+**Version: v2.6**
 
 Openwrt VPN setup and management script, making management of Open VPN via CLI much simpler.
 
 The All-in-One OpenVPN Management Script
 Tired of managing keys, ovpn files and all different parts piecemeal? Use this script on the CLI to manage it all.
 
+## What's New in v2.6
+- **Support for OpenWRT 25** - opkg was exchanged for apk add use of opkg or apk
+- **Instal Menu** - Install manditory needed packages
 ## What's New in v2.5
-
 - **Server Control Menu** - Centralized start/stop/restart with status checking
 - **Safe Restart** - Automatic detection of active client connections before restart
 - **Scheduled Restarts** - Schedule restarts using 'at' utility (auto-installed)
@@ -39,7 +41,7 @@ This guide assumes you're starting from scratch with nothing installed. Follow t
 1. **Install required packages:**
    ```bash
    opkg update
-   opkg install openvpn-openssl wget
+   opkg wget
    ```
 
 2. **Download and run the script:**
@@ -53,7 +55,18 @@ This guide assumes you're starting from scratch with nothing installed. Follow t
 
 ## Step-by-Step Setup
 
-### Step 1: Install LuCI Web Interface (Optional but Recommended)
+### Step 1: Install needed packages
+
+**Menu Option: 19**
+
+```
+13) Install needed packages
+Continue with installation? (yes/no): yes
+```
+
+This installs needed packages `at openvpn-ssl and openvpn-easy-rsa`:
+
+### Step 2: Install LuCI Web Interface (Optional but Recommended)
 
 **Menu Option: 13**
 
@@ -72,12 +85,12 @@ This installs `luci-app-openvpn` which provides:
 
 **Note:** Changes made in LuCI and this script are synchronized via UCI.
 
-### Step 2: Install and Initialize EasyRSA
+### Step 2: Initialize EasyRSA
 
 **Menu Option: 12**
 
 ```
-12) Install and initialize EasyRSA for OpenVPN
+12) Initialize EasyRSA for OpenVPN
 ```
 
 This will:
