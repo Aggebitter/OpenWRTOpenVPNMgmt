@@ -9,7 +9,8 @@ Tired of managing keys, ovpn files and all different parts piecemeal? Use this s
 
 ## What's New in v2.6
 - **Support for OpenWRT 25** - opkg was exchanged for apk add use of opkg or apk
-- **Instal Menu** - Install manditory needed packages
+- **Install Menu** - Install manditory needed packages
+- **Reboot Menu** - Use after install packages to get them running (needed?)
 ## What's New in v2.5
 - **Server Control Menu** - Centralized start/stop/restart with status checking
 - **Safe Restart** - Automatic detection of active client connections before restart
@@ -24,6 +25,10 @@ Assuming you have installed wget...
 ```
 opkg update
 opkg install wget
+Or for OpenWRt 25 and later
+apk update
+apk add wget
+
 ```
 Then if you are SSSH'd into OpenWRT now, grab then run it like this:
 ```
@@ -75,18 +80,19 @@ This installs needed packages `at openvpn-ssl and openvpn-easy-rsa`:
 13) Install LuCI OpenVPN web interface
 Continue with installation? (yes/no): yes
 ```
-
-This installs `luci-app-openvpn` which provides:
+This installs `luci-app-openvpn and luci-app-filemanager ` which provides:
 - Web-based management interface
 - Instance control (start/stop/restart)
 - Configuration file editing
 - Status monitoring
-
 **Access:** Web Interface → Services → OpenVPN (or System → OpenVPN)
-
 **Note:** Changes made in LuCI and this script are synchronized via UCI.
+- File manager for downloading generated client .ovpn files
+**Navigate to System → File Browser:**
 
-### Step 2: Initialize EasyRSA
+
+
+### Step 3: Initialize EasyRSA
 
 **Menu Option: 12**
 
@@ -103,7 +109,7 @@ This will:
 
 **Important:** This step takes several minutes due to cryptographic key generation.
 
-### Step 3: Auto-Detect Server Settings
+### Step 4: Auto-Detect Server Settings
 
 **Menu Option: 0**
 
@@ -133,7 +139,7 @@ The auto-detect feature will automatically detect your DDNS hostname if configur
 
 If DDNS is not configured, the script will fall back to using your current WAN IP address.
 
-### Step 4: Configure IPv6 (Optional - Advanced Users)
+### Step 5: Configure IPv6 (Optional - Advanced Users)
 
 **Note:** IPv6 is disabled by default to avoid configuration conflicts. Only enable if you understand IPv6 networking and have verified your router has proper IPv6 prefix delegation from your ISP.
 
@@ -226,7 +232,7 @@ Enter bandwidth limit in bytes per second:
 
 **Note:** The `shaper` directive applies to outgoing traffic from the server. For more advanced per-client bandwidth control, consider using Traffic Control (tc) scripts.
 
-### Step 5: Generate Server Configuration
+### Step 6: Generate Server Configuration
 
 **Menu Option: 1**
 
@@ -247,7 +253,7 @@ This creates `/etc/openvpn/server.conf` with:
 
 **Autostart Configuration:** The script automatically enables the OpenVPN service to start on router boot by running `/etc/init.d/openvpn enable`. This ensures your VPN server starts automatically after power cycles or reboots.
 
-### Step 6: Configure Firewall
+### Step 7: Configure Firewall
 
 **Menu Option: 15**
 
@@ -298,9 +304,9 @@ Restart firewall to apply changes? (y/n): y
 - IPv6 zones properly configured
 - IPv6 forwarding rules exist
 
-### Step 7: Restart OpenVPN
+### Step 8: Restart OpenVPN
 
-From Step 5, when prompted:
+From Step 6, when prompted:
 
 ```
 Restart OpenVPN instance 'server' to apply changes? (y/n): y
@@ -311,7 +317,7 @@ Or manually:
 /etc/init.d/openvpn restart server
 ```
 
-### Step 8: Create Your First Client Certificate
+### Step 9: Create Your First Client Certificate
 
 **Menu Option: 4**
 
@@ -343,7 +349,7 @@ This can be arranged any way you like, consider a naming scheme like:
 - TLS-Crypt key: `/etc/easy-rsa/pki/private/bill.laptop.pem`
 - Client config: `/root/ovpn_config_out/bill.laptop.ovpn`
 
-### Step 9: Download Client Configuration
+### Step 10: Download Client Configuration
 
 The `.ovpn` file is located at: `/root/ovpn_config_out/bill.laptop.ovpn`
 
@@ -355,11 +361,9 @@ scp root@192.168.1.1:/root/ovpn_config_out/bill.laptop.ovpn ~/Downloads/
 ```
 
 **Or via LuCI Web Interface:**
-NOTE: file browser is installable as ```opkg install luci-app-filemanager```
-
 1. Navigate to System → File Browser (if available)
 
-### Step 10: Connect Your Client
+### Step 11: Connect Your Client
 
 **Windows/Mac/Linux:**
 1. Install OpenVPN client
