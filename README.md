@@ -66,7 +66,7 @@ This guide assumes you're starting from scratch with nothing installed. Follow t
 **Menu Option: 19**
 
 ```
-13) Install needed packages
+19) Install needed packages
 Continue with installation? (yes/no): yes
 ```
 
