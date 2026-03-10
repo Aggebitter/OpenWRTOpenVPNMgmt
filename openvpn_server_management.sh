@@ -3594,7 +3594,7 @@ while true; do
     echo ""
     echo "Setup & Integration:"
     echo " 12) Initialize EasyRSA for OpenVPN"
-    echo " 13) Install LuCI OpenVPN web interface"
+    echo " 13) Install LuCI OpenVPN and Filemanager web interface"
     echo ""
     echo "Firewall Management:"
     echo " 14) Check firewall configuration"
@@ -3684,7 +3684,7 @@ while true; do
             key_management_first_time
             ;;
         13)
-            install_luci_openvpn
+            install_luci_openvpn_filemanager
             read -p "Press Enter to continue..."
             ;;
         14)
