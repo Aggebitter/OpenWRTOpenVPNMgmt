@@ -2675,8 +2675,8 @@ key_management_first_time() {
 
 }
 
-# Function to install LuCI OpenVPN web interface
-install_luci_openvpn() {
+# Function to install LuCI OpenVPN and Filemanager web interface
+install_luci_openvpn_filemanager() {
     local confirm
 
     echo ""
@@ -2688,6 +2688,7 @@ install_luci_openvpn() {
     echo "  - Start/stop/restart controls"
     echo "  - Configuration file editing"
     echo "  - Status monitoring"
+	echo "  - Filemanager for access to client .opvn files"
     echo ""
     echo "This script and LuCI will share the same UCI configuration"
     echo "Changes made in one will be visible in the other"
@@ -2715,7 +2716,7 @@ install_luci_openvpn() {
 
     echo ""
     echo "Installing luci-app-openvpn..."
-    if apk add luci-app-openvpn; then
+    if apk add luci-app-openvpn luci-app-filemanager; then
         echo ""
         echo "Installation complete!"
         echo ""
@@ -2724,9 +2725,12 @@ install_luci_openvpn() {
         echo "  or"
         echo "  Web Interface > System > OpenVPN"
         echo ""
+        echo "Access the LuCI Filemanagement interface at:"
+        echo "  Web Interface > System > File Manager"
+		echo ""
         echo "Note: You may need to refresh your browser to see the new menu"
     else
-		if opkg install luci-app-openvpn; then
+		if opkg install luci-app-openvpn luci-app-filemanager; then
 		        echo ""
 			echo "Installation complete!"
 			echo ""
@@ -2734,6 +2738,9 @@ install_luci_openvpn() {
 			echo "  Web Interface > Services > OpenVPN"
 			echo "  or"
 			echo "  Web Interface > System > OpenVPN"
+			echo ""
+			echo "Access the LuCI Filemanagement interface at:"
+        	echo "  Web Interface > System > File Manager"
 			echo ""
 			echo "Note: You may need to refresh your browser to see the new menu"
 		else
