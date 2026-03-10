@@ -3492,6 +3492,18 @@ check_fix_permissions() {
 
 # Function for installing needed packages and addons
 install_needed_packages(){
+    local confirm
+
+    echo ""
+    echo "=== Installs at, openvpn-openssl, openvpn-easy-rsa ==="
+    echo ""
+    read -p "Continue with installation? (yes/no): " confirm
+
+    if [ "$confirm" != "yes" ]; then
+        echo "Installation cancelled"
+        return 0
+    fi
+	
     if ! apk update; then
 		if ! opkg udate; then
 			echo "Error: Failed to update package lists"
