@@ -77,7 +77,7 @@ This installs needed packages `at openvpn-ssl and openvpn-easy-rsa`:
 **Menu Option: 13**
 
 ```
-13) Install LuCI OpenVPN web interface
+13) Install LuCI OpenVPN and Filemanager web interface
 Continue with installation? (yes/no): yes
 ```
 This installs `luci-app-openvpn and luci-app-filemanager ` which provides:
