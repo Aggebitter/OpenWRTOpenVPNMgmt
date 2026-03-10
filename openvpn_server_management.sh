@@ -2716,6 +2716,7 @@ install_luci_openvpn_filemanager() {
 
     echo ""
     echo "Installing luci-app-openvpn..."
+	echo "Installing luci-app-filemanager..."
     if apk add luci-app-openvpn luci-app-filemanager; then
         echo ""
         echo "Installation complete!"
