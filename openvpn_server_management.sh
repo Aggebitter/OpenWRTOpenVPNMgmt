@@ -3531,6 +3531,21 @@ install_needed_packages(){
     fi
 }
 
+# Function to reboot OpenWRT after installing needed packages
+reboot_openwrt(){
+    local confirm
+
+    echo ""
+    echo "=== Reboot OpenWRt after installation of needed packages ==="
+    echo ""
+    read -p "Continue with rebooting? (yes/no): " confirm
+
+    if [ "$confirm" != "yes" ]; then
+        echo "Reboot cancelled"
+        return 0
+    fi
+}
+
 # Clear terminal at startup for clean display
 reset
 
@@ -3585,6 +3600,7 @@ while true; do
     echo ""
 	echo "Install:"
     echo " 19) Install needed packages"
+	echo " r) Reboot OpenWRT after install"
     echo ""
     echo " 20) Exit"
     echo ""	
@@ -3685,6 +3701,10 @@ while true; do
         19)
             install_needed_packages
             read -p "Press Enter to continue..."
+            ;;
+		r|R)
+            reboot_openwrt
+            exit 0
             ;;
         20)
             echo "Exiting..."
