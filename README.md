@@ -27,7 +27,8 @@ opkg install wget
 ```
 Then if you are SSSH'd into OpenWRT now, grab then run it like this:
 ```
-wget https://raw.githubusercontent.com/beadon/OpenWRTOpenVPNMgmt/refs/heads/main/openvpn_server_management.sh
+(wget https://raw.githubusercontent.com/beadon/OpenWRTOpenVPNMgmt/refs/heads/main/openvpn_server_management.sh)
+wget https://raw.githubusercontent.com/Aggebitter/OpenWRTOpenVPNMgmt/refs/heads/main/openvpn_server_management.sh
 chmod 775 openvpn_server_management.sh
 ./openvpn_server_management.sh
 ```
