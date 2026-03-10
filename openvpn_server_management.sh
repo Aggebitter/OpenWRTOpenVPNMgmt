@@ -2,7 +2,7 @@
 ################################################################################
 #                   OpenWRT OpenVPN Server Management Script                  #
 #                                                                              #
-#  Version: v2.5                                                               #
+#  Version: v2.6                                                               #
 #  Repository: https://github.com/beadon/OpenWRTOpenVPNMgmt                   #
 #                                                                              #
 #  All-in-one OpenVPN server management for OpenWrt                           #
@@ -11,7 +11,7 @@
 #  - IPv6 support, firewall configuration, monitoring                         #
 ################################################################################
 
-SCRIPT_VERSION="v2.5"
+SCRIPT_VERSION="v2.6"
 
 ################################################################################
 #                        USER CONFIGURATION SECTION                            #
@@ -319,13 +319,17 @@ check_dhcpv6_prerequisites() {
 
     # Check if odhcpd is installed
     echo "Checking for odhcpd package..."
-    if opkg list-installed | grep -q "^odhcpd "; then
+    if apk list --installed | grep -q "^odhcpd "; then
         echo "  ✓ odhcpd is installed"
     else
-        echo "  ✗ odhcpd is NOT installed"
-        echo ""
-        echo "    To install: opkg update && opkg install odhcpd"
-        all_ok=0
+	    if opkg list --installed | grep -q "^odhcpd "; then
+			echo "  ✓ odhcpd is installed"
+		else
+			echo "  ✗ odhcpd is NOT installed"
+			echo ""
+			echo "    To install: Use meny option 19"
+			all_ok=0
+		fi
     fi
 
     echo ""
@@ -2647,6 +2651,9 @@ configure_performance() {
 
 key_management_first_time() {
 
+
+
+    echo ""
     # Configuration parameters
     export EASYRSA_PKI="${OVPN_PKI}"
     export EASYRSA_TEMP_DIR="/tmp"
@@ -2698,15 +2705,17 @@ install_luci_openvpn() {
 
     echo ""
     echo "Updating package lists..."
-    if ! opkg update; then
-        echo "Error: Failed to update package lists"
-        echo "Check your internet connection"
-        return 1
+    if ! apk update; then
+		if ! opkg udate; then
+			echo "Error: Failed to update package lists"
+			echo "Check your internet connection"
+			return 1
+		fi
     fi
 
     echo ""
     echo "Installing luci-app-openvpn..."
-    if opkg install luci-app-openvpn; then
+    if apk add luci-app-openvpn; then
         echo ""
         echo "Installation complete!"
         echo ""
@@ -2717,10 +2726,22 @@ install_luci_openvpn() {
         echo ""
         echo "Note: You may need to refresh your browser to see the new menu"
     else
-        echo ""
-        echo "Error: Installation failed"
-        echo "The package may already be installed or unavailable"
-        return 1
+		if opkg install luci-app-openvpn; then
+		        echo ""
+			echo "Installation complete!"
+			echo ""
+			echo "Access the LuCI OpenVPN interface at:"
+			echo "  Web Interface > Services > OpenVPN"
+			echo "  or"
+			echo "  Web Interface > System > OpenVPN"
+			echo ""
+			echo "Note: You may need to refresh your browser to see the new menu"
+		else
+			echo ""
+			echo "Error: Installation failed"
+			echo "The package may already be installed or unavailable"
+			return 1
+		fi
     fi
 
     echo ""
@@ -2871,7 +2892,7 @@ ensure_at_installed() {
         echo "Installing 'at' package..."
         echo ""
 
-        if opkg update && opkg install at; then
+        if apk --update-cache add at; then
             echo ""
             echo "'at' utility installed successfully."
 
@@ -2881,10 +2902,20 @@ ensure_at_installed() {
 
             return 0
         else
-            echo ""
-            echo "ERROR: Failed to install 'at' utility."
-            echo "Scheduled restarts will not be available."
-            return 1
+			if opkg update && opkg at; then
+				echo ""
+				echo "'at' utility installed successfully."
+
+				# Enable and start atd daemon
+				/etc/init.d/atd enable 2>/dev/null
+				/etc/init.d/atd start 2>/dev/null
+			
+			else
+				echo ""
+				echo "ERROR: Failed to install 'at' utility."
+				echo "Scheduled restarts will not be available."
+				return 1
+			fi
         fi
     fi
 
@@ -3459,6 +3490,35 @@ check_fix_permissions() {
     rm -f "$temp_issues"
 }
 
+# Function for installing needed packages and addons
+install_needed_packages(){
+    if ! apk update; then
+		if ! opkg udate; then
+			echo "Error: Failed to update package lists"
+			echo "Check your internet connection"
+			return 1
+		fi
+    fi
+    echo ""
+    echo "Installing openvpn-openssl openvpn-easy-rsa..."
+    if apk add at openvpn-openssl openvpn-easy-rsa ; then
+        echo ""
+        echo "Installation complete!"
+        echo ""
+    else
+		if opkg install at openvpn-openssl openvpn-easy-rsa; then
+			echo ""
+			echo "Installation complete!"
+			echo ""
+			echo ""
+		else
+			echo "Error: Installation failed"
+			echo "The package may already be installed or unavailable"
+			return 1
+		fi
+    fi
+}
+
 # Clear terminal at startup for clean display
 reset
 
@@ -3497,7 +3557,7 @@ while true; do
     echo " 11) Generate single .ovpn config file"
     echo ""
     echo "Setup & Integration:"
-    echo " 12) Install and initialize EasyRSA for OpenVPN"
+    echo " 12) Initialize EasyRSA for OpenVPN"
     echo " 13) Install LuCI OpenVPN web interface"
     echo ""
     echo "Firewall Management:"
@@ -3511,8 +3571,11 @@ while true; do
     echo " 17) Diagnose IPv6 routing issues"
     echo " 18) Check/Fix file permissions"
     echo ""
-    echo " 19) Exit"
+	echo "Install:"
+    echo " 19) Install needed packages"
     echo ""
+    echo " 20) Exit"
+    echo ""	
     read -p "Select an option: " choice
     
     case $choice in
@@ -3524,7 +3587,7 @@ while true; do
             list_openvpn_instances
             read -p "Press Enter to continue..."
             ;;
-	0)
+		0)
             auto_detect_fqdn
             ;;
         1)
@@ -3608,6 +3671,10 @@ while true; do
             read -p "Press Enter to continue..."
             ;;
         19)
+            install_needed_packages
+            read -p "Press Enter to continue..."
+            ;;
+        20)
             echo "Exiting..."
             exit 0
             ;;
