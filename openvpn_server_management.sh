@@ -3500,7 +3500,7 @@ install_needed_packages(){
 		fi
     fi
     echo ""
-    echo "Installing openvpn-openssl openvpn-easy-rsa..."
+    echo "Installing at, openvpn-openssl, openvpn-easy-rsa..."
     if apk add at openvpn-openssl openvpn-easy-rsa ; then
         echo ""
         echo "Installation complete!"
