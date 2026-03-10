@@ -3544,6 +3544,8 @@ reboot_openwrt(){
         echo "Reboot cancelled"
         return 0
     fi
+
+	reboot
 }
 
 # Clear terminal at startup for clean display
